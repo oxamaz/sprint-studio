@@ -338,6 +338,36 @@
 .tm-spot.touch button { transform: scale(1.35); background: var(--coral); box-shadow: 0 0 0 0.25cqw rgba(246, 238, 221, 0.95), 0 0 1.6cqw 0.3cqw rgba(240, 122, 95, 0.55); animation: none; }
 .tm-spot.touch button::after { transform: scale(1); background: var(--cream); }
 .tm-spot.touch .tm-burst i { animation: tm-emoji 1.8s cubic-bezier(.2,.9,.3,1) var(--bd) infinite; }
+/* Legibility: frosted panels over the mat, and nothing spills past the mat's edge at any width */
+.tm-sec, .tm-person, .tm-team button { backdrop-filter: blur(8px) saturate(125%); -webkit-backdrop-filter: blur(8px) saturate(125%); }
+.tm-sec { background: rgba(6, 36, 32, 0.46); border-color: rgba(246, 238, 221, 0.8); box-shadow: 0 0.4cqw 1cqw -0.5cqw rgba(0, 0, 0, 0.5); }
+.tm-sec:hover { background: rgba(6, 36, 32, 0.6); }
+.tm-person { background: rgba(6, 36, 32, 0.46); border-color: rgba(246, 238, 221, 0.75); box-shadow: 0 0.4cqw 1cqw -0.5cqw rgba(0, 0, 0, 0.5); }
+.tm-person:hover { background: rgba(6, 36, 32, 0.62); }
+.tm-person .tm-person-h { color: rgba(246, 238, 221, 0.92); }
+.tm-person .tm-person-bar { background: rgba(246, 238, 221, 0.28); }
+.tm-team button { background: rgba(6, 36, 32, 0.4); border-color: rgba(246, 238, 221, 0.8); }
+.tm-team button small { color: rgba(246, 238, 221, 0.9); }
+.tm.inv .tm-sec, .tm.inv .tm-person, .tm.inv .tm-team button { background: rgba(255, 251, 242, 0.62); border-color: rgba(15, 79, 69, 0.6); box-shadow: 0 0.4cqw 1cqw -0.5cqw rgba(60, 40, 10, 0.3); }
+.tm.inv .tm-sec:hover, .tm.inv .tm-person:hover { background: rgba(255, 251, 242, 0.8); }
+.tm.inv .tm-person .tm-person-h, .tm.inv .tm-team button small { color: rgba(15, 79, 69, 0.85); }
+.tm.inv .tm-person.on { background: #0f4f45; }
+.tm.inv .tm-sec.on { background: color-mix(in srgb, var(--sec) 28%, rgba(255, 251, 242, 0.85)); }
+.tm-kicker, .tm-dates, .tm-switch, .tm-hours, .tm-ring text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
+.tm.inv .tm-kicker, .tm.inv .tm-dates, .tm.inv .tm-switch, .tm.inv .tm-hours { text-shadow: 0 1px 3px rgba(255, 255, 255, 0.6); }
+.tm-peoplerow { left: 23.4%; width: 46.2%; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 0.8cqw; }
+.tm-peoplerow .tm-people { display: contents; }
+.tm-team { min-width: 0; }
+.tm-team button { width: 100%; min-width: 0; }
+.tm-team button b, .tm-team button small { overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tm-person { min-width: 0; }
+.tm-person-h { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.tm-secs { left: 42.6%; width: 28%; gap: 0.9cqw; }
+.tm-sec { min-width: 0; }
+.tm-sec-s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tm-frame { max-width: 54%; } .tm-title { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.tm-dates { max-width: 58%; overflow: hidden; text-overflow: ellipsis; }
+.tm-kicker { max-width: 42%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 </style>
 
 <div class="tm" id="studio">
@@ -748,7 +778,7 @@ dash.draw('teambtn', (box) => {
     b.className = 'is-label';
     av.textContent = String(n);
     big.textContent = 'Whole team';
-    small.textContent = dash.params().section ? String(dash.params().section).replace(' Sprint', '').replace(' Tasks', '').toLowerCase() + ' only' : 'tap a name to focus';
+    small.textContent = dash.params().section ? String(dash.params().section).replace(' Sprint', '').replace(' Tasks', '').toLowerCase() + ' only' : 'tap a name';
     b.setAttribute('aria-label', 'Viewing the whole team');
     b.tabIndex = -1;
   }
