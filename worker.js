@@ -36,6 +36,26 @@ async function sprint(env) {
   return json({ issues, fetchedAt: new Date().toISOString() });
 }
 
+/* Which Jira account the token belongs to, and whether it can see the project: for setup checks only */
+async function whoami(env) {
+  if (!env.JIRA_EMAIL || !env.JIRA_TOKEN) return json({ error: 'Jira secrets are not set on the worker.' }, 500);
+  const auth = 'Basic ' + btoa(`${env.JIRA_EMAIL}:${env.JIRA_TOKEN}`);
+  const h = { Authorization: auth, Accept: 'application/json', 'Content-Type': 'application/json' };
+  const me = await fetch(`${JIRA_SITE}/rest/api/3/myself`, { headers: h });
+  const meBody = me.ok ? await me.json() : { status: me.status, text: (await me.text()).slice(0, 200) };
+  const alt = await fetch('https://api.atlassian.com/ex/jira/0b710720-23d3-4538-bf38-791faa12a399/rest/api/3/myself', { headers: h });
+  const altBody = alt.ok ? { displayName: (await alt.json()).displayName } : { status: alt.status, text: (await alt.text()).slice(0, 160) };
+  const shape = { emailLooksValid: /^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(env.JIRA_EMAIL.trim()), emailLength: env.JIRA_EMAIL.length, emailHasSpaces: /\s/.test(env.JIRA_EMAIL), tokenLength: env.JIRA_TOKEN.length, tokenStartsATATT: env.JIRA_TOKEN.trim().startsWith('ATATT'), tokenHasSpaces: /\s/.test(env.JIRA_TOKEN) };
+  const probe = async (jql) => { const r = await fetch(`${JIRA_SITE}/rest/api/3/search/jql`, { method: 'POST', headers: h, body: JSON.stringify({ jql, fields: ['summary'], maxResults: 5 }) }); const b = await r.text(); let n = null; try { n = (JSON.parse(b).issues || []).length; } catch (e) {} return { status: r.status, count: n, text: n === null ? b.slice(0, 200) : undefined }; };
+  return json({
+    account: me.ok ? { displayName: meBody.displayName, active: meBody.active, emailDomain: String(meBody.emailAddress || '').split('@')[1] } : meBody,
+    viaApiGateway: altBody,
+    shape,
+    anyDG: await probe('project = DG'),
+    sprintQuery: await probe(JQL)
+  });
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
