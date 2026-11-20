@@ -2,3 +2,6 @@ node_modules/
 .wrangler/
 .dev.vars
 *.log
+live-feed.json
+localtest.js
+wrangler-login.log
