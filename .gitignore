@@ -5,3 +5,7 @@ node_modules/
 live-feed.json
 localtest.js
 wrangler-login.log
+graph.json
+graph2.json
+onescreen.json
+localtest.log
